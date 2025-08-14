@@ -19,7 +19,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-
 @Entity
 @Table(name = "customers",
         uniqueConstraints = @UniqueConstraint(name="uk_customers_email", columnNames="email_address"))
