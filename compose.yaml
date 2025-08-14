@@ -7,17 +7,17 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: aeroparker         # created on first run
-      MYSQL_USER: appuser                # optional app user
+      MYSQL_DATABASE: aeroparker
+      MYSQL_USER: appuser
       MYSQL_PASSWORD: apppass
       TZ: Europe/London
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./init:/docker-entrypoint-initdb.d   # runs *.sql on first startup
+      - ./init:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-psupersecret"]
+      test: ["CMD", "mysqladmin", "ping", "-proot"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -31,6 +31,21 @@ services:
       PMA_HOST: mysql
     ports:
       - "8080:80"
+
+  app:
+    build:
+      context: .
+    container_name: aeroparker-app
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/aeroparker?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: appuser
+      SPRING_DATASOURCE_PASSWORD: apppass
+    ports:
+      - "8081:8080"
 
 volumes:
   mysql_data:
