@@ -1,6 +1,9 @@
-package com.example.aeroparkertechtest.customer;
-
+package com.example.aeroparkertechtest.controller;
+import com.example.aeroparkertechtest.entity.Customer;
+import com.example.aeroparkertechtest.model.CustomerRequest;
+import com.example.aeroparkertechtest.service.RegistrationService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,14 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
-
+@RequiredArgsConstructor
 @Controller
 public class RegistrationController {
-    private final CustomerRepository customerRepository;
-
-    public RegistrationController(CustomerRepository customerRepository) {
-        this.customerRepository = customerRepository;
-    }
+    private final RegistrationService registrationService;
 
     @GetMapping("/registration")
     public String registration(Model model) {
@@ -25,12 +24,12 @@ public class RegistrationController {
     }
 
     @PostMapping("/registration")
-    public String submit(@Valid @ModelAttribute("customer") Customer customer,
+    public String submit(@Valid @ModelAttribute("customer") CustomerRequest customer,
                          BindingResult errors, Model model) {
         if (errors.hasErrors()) return "registration";
 
         try {
-            customerRepository.save(customer);
+            registrationService.registerCustomer(customer);
         } catch (DataIntegrityViolationException ex) {
             errors.rejectValue("emailAddress", "duplicate", "Email address is already registered");
             return "registration";
