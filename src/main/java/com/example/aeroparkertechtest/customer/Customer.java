@@ -14,6 +14,11 @@ import java.time.Instant;
 // and enforces validation rules (e.g., required fields, max length, email format)
 // before data is persisted.
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 
 @Entity
 @Table(name = "customers",
