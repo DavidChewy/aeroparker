@@ -1,1 +1,36 @@
+version: "3.9"
+
 services:
+  mysql:
+    image: mysql:8.4
+    container_name: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: aeroparker         # created on first run
+      MYSQL_USER: appuser                # optional app user
+      MYSQL_PASSWORD: apppass
+      TZ: Europe/London
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init:/docker-entrypoint-initdb.d   # runs *.sql on first startup
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-psupersecret"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: pma
+    restart: unless-stopped
+    depends_on: [mysql]
+    environment:
+      PMA_HOST: mysql
+    ports:
+      - "8080:80"
+
+volumes:
+  mysql_data:
