@@ -1,13 +1,7 @@
 package com.example.aeroparkertechtest.customer;
-
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.Instant;
-
-
-
-
 
 // Customer entity represents a row in the "customers" table.
 // It maps form inputs to database columns via JPA annotations
